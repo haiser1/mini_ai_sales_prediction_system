@@ -65,6 +65,29 @@ graph TD
 
 ---
 
+## 📁 Struktur Proyek
+
+Secara garis besar, struktur direktori proyek ini adalah sebagai berikut:
+
+```text
+.
+├── backend                 # API Backend (FastAPI)
+│   ├── app                 # Kode utama aplikasi (API, Models, Services)
+│   ├── scripts             # Script utilitas (Seeding data)
+│   └── requirements.txt    # Dependencies backend
+├── data                    # Penyimpanan sementara file CSV laporan penjualan
+├── frontend                # Aplikasi Web Frontend (React + Vite + Tailwind)
+│   ├── public              # Aset publik statis (Favicon, Logo, dsb.)
+│   ├── src                 # Kode sumber React (Pages, Components, Store, API)
+│   └── package.json        # Dependencies frontend
+└── ml                      # Machine Learning (Scikit-Learn)
+    ├── model               # File model terlatih (.pkl)
+    ├── predict.py          # Script helper untuk pengujian
+    └── train_model.py      # Script untuk melatih ulang model (retraining)
+```
+
+---
+
 ## 🚀 Cara Setup dan Menjalankan Proyek
 
 Proyek ini terdiri dari lingkungan Backend dan Frontend. Pastikan Anda sudah menginstal **Python 3.10+**, **Node.js 20+**, dan instance **PostgreSQL** yang berjalan.
