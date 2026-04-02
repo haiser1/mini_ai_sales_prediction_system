@@ -1,15 +1,12 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.auth_schema import UserCreate, UserLogin
-from app.services.auth_service import AuthService
-from app.core.database import get_db
+from app.services.auth_service import AuthService, get_auth_service
 from app.helper.base_response import BaseResponse, success_response
 
 router = APIRouter()
 
 @router.post("/register", response_model=BaseResponse)
-async def register_user(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
-    auth_service = AuthService(db)
+async def register_user(user_in: UserCreate, auth_service: AuthService = Depends(get_auth_service)):
     token_response = await auth_service.register(user_in)
     return success_response(
         data=token_response.model_dump(), 
@@ -17,8 +14,7 @@ async def register_user(user_in: UserCreate, db: AsyncSession = Depends(get_db))
     )
 
 @router.post("/login", response_model=BaseResponse)
-async def login_user(user_in: UserLogin, db: AsyncSession = Depends(get_db)):
-    auth_service = AuthService(db)
+async def login_user(user_in: UserLogin, auth_service: AuthService = Depends(get_auth_service)):
     token_response = await auth_service.login(user_in)
     return success_response(
         data=token_response.model_dump(), 

@@ -10,10 +10,6 @@ class BaseResponse(BaseModel, Generic[DataType]):
     meta: Optional[Dict[str, Any]] = None
 
 
-class BaseErrorResponse(BaseModel):
-    message: str
-    details: Optional[Any] = None
-
 
 def success_response(
     data: Any = None, message: str = "Success", meta: Optional[dict] = None

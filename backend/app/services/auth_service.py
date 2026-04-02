@@ -1,10 +1,11 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.schemas.auth_schema import UserCreate, UserLogin, TokenResponse
 from app.models.user import User
 from app.helper.password_helper import get_password_hash, verify_password
 from app.helper.token_helper import create_access_token, create_refresh_token
+from app.core.database import get_db
 
 
 class AuthService:
@@ -26,8 +27,12 @@ class AuthService:
             full_name=user_in.full_name,
         )
         self.db.add(new_user)
-        await self.db.commit()
-        await self.db.refresh(new_user)
+        try:
+            await self.db.commit()
+            await self.db.refresh(new_user)
+        except Exception as e:
+            await self.db.rollback()
+            raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
         # Generate tokens
 
@@ -53,3 +58,7 @@ class AuthService:
         return TokenResponse(
             access_token=access_token, refresh_token=refresh_token, token_type="bearer"
         )
+
+
+def get_auth_service(db: AsyncSession = Depends(get_db)) -> AuthService:
+    return AuthService(db)

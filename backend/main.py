@@ -1,4 +1,5 @@
 import time
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -8,6 +9,16 @@ from app.core.config import settings
 from app.api.main_router import api_router
 from app.helper.base_response import error_response
 from app.helper.logger import json_logger
+from app.services.predict_service import load_ml_models, clear_ml_models
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Executed at startup
+    load_ml_models()
+    yield
+    # Executed on shutdown
+    clear_ml_models()
 
 
 def register_exception_handlers(app: FastAPI):
@@ -85,6 +96,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.PROJECT_NAME,
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
+        lifespan=lifespan,
     )
 
     register_middlewares(app)

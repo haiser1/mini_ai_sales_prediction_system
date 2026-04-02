@@ -1,8 +1,10 @@
 import math
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_
 from app.models.sales_data import SalesData
 from app.schemas.sales_schema import SalesDataResponse, PaginationMeta
+from app.core.database import get_db
 
 
 class SalesService:
@@ -49,3 +51,7 @@ class SalesService:
             total_pages=total_pages,
         )
         return data, meta
+
+
+def get_sales_service(db: AsyncSession = Depends(get_db)) -> SalesService:
+    return SalesService(db)

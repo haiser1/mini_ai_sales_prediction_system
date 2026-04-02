@@ -26,8 +26,8 @@ def load_model(model_dir=None):
     model = joblib.load(model_path)
     scaler = joblib.load(scaler_path)
 
-    print(f"✅ Model berhasil dimuat dari: {model_path}")
-    print(f"✅ Scaler berhasil dimuat dari: {scaler_path}")
+    print(f"Model berhasil dimuat dari: {model_path}")
+    print(f"Scaler berhasil dimuat dari: {scaler_path}")
 
     return model, scaler
 

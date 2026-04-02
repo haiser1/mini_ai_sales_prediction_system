@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.user_schema import UserUpdate, UserResponse
-from app.services.user_service import UserService
-from app.core.database import get_db
+from app.services.user_service import UserService, get_user_service
 from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.helper.base_response import BaseResponse, success_response
@@ -26,9 +24,8 @@ async def get_current_user_detail(
 async def update_current_user(
     user_in: UserUpdate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    user_service: UserService = Depends(get_user_service),
 ):
     """Update the profile of the currently authenticated user."""
-    user_service = UserService(db)
     user = await user_service.update_user(current_user.id, user_in)
     return success_response(data=user.model_dump(), message="User updated successfully")

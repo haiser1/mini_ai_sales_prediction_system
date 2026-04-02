@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.services.sales_service import SalesService
-from app.core.database import get_db
+from app.services.sales_service import SalesService, get_sales_service
 from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.helper.base_response import BaseResponse, success_response
@@ -18,10 +16,9 @@ async def get_sales_list(
     ),
     status: str | None = Query(None, description="Filter by status: Laris or Tidak"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    sales_service: SalesService = Depends(get_sales_service),
 ):
     """Get paginated list of sales data with search and filter."""
-    sales_service = SalesService(db)
     items, meta = await sales_service.get_sales_list(
         page=page, limit=limit, search=search, status=status
     )

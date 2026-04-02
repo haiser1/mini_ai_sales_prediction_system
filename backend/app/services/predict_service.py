@@ -8,21 +8,35 @@ if ml_dir not in sys.path:
 
 from predict import load_model, predict  # noqa: E402
 
+ml_models = {}
+
+
+def load_ml_models():
+    """Load the ML components directly and store in our global dictionary"""
+    model_dir = os.path.join(ml_dir, "model")
+    model, scaler = load_model(model_dir)
+    ml_models["model"] = model
+    ml_models["scaler"] = scaler
+
+
+def clear_ml_models():
+    """Clear memory used by ML components"""
+    print("Clearing ML models from memory...")
+    ml_models.clear()
+
 
 class PredictService:
-    def __init__(self):
-        # Load the model and scaler when the service is instantiated
-        self.model_dir = os.path.join(ml_dir, "model")
-        self.model, self.scaler = load_model(self.model_dir)
+    def __init__(self, model, scaler):
+        self.model = model
+        self.scaler = scaler
 
     def get_prediction(self, jumlah_penjualan: int, harga: int, diskon: int) -> str:
         """
         Takes input features and returns the prediction result using the loaded ML model.
         """
-        # Call the predict function from ml/predict.py
         result = predict(self.model, self.scaler, jumlah_penjualan, harga, diskon)
         return result
 
 
-# Singleton instance to be used across requests
-predict_service = PredictService()
+def get_predict_service() -> PredictService:
+    return PredictService(ml_models.get("model"), ml_models.get("scaler"))
